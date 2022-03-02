@@ -131,6 +131,8 @@ Prettier & Format On Save
 
 ### 1- Introduction
 
+​	![image-20220302214443507](README.assets/image-20220302214443507.png)
+
 ### 2- The Head Section
 
 - the head section give browser and search engine information about the web page
@@ -481,5 +483,8 @@ Semantic container：
 </body>
 ```
 
+## CSS Basics
 
+### 1- Introduction
 
+![image-20220302222805424](README.assets/image-20220302222805424.png)
