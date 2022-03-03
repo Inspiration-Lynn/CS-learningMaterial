@@ -6,7 +6,7 @@ Every web or mobile application has two parts: a front-end and a back-end. The f
 
 Front-end development starts with HTML and CSS. These are the languages behind every web page on the Internet. My HTML/CSS series teaches you everything you need to know from absolute basics to advanced concepts.
 
-- HTML/CSS 1: [Fundamentals](https://www.bilibili.com/video/BV1rK4y1W7XZ?from=search&seid=4220631180025126553&spm_id_from=333.337.0.0) - 3h
+- HTML/CSS 1: [Fundamentals](https://www.bilibili.com/video/BV1rK4y1W7XZ?from=search&seid=4220631180025126553&spm_id_from=333.337.0.0) - 3h ✔
 
   > Learn and understand the fundamentals of web development with HTML and CSS.
 
