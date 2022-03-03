@@ -488,3 +488,413 @@ Semantic container：
 ### 1- Introduction
 
 ![image-20220302222805424](README.assets/image-20220302222805424.png)
+
+### 2 - Providing CSS
+
+使用CSS的三种方式：
+
+- Embedded stylesheets - 内嵌样式表 （将样式封装在HTML文档中）
+
+  - 扩展性差 - 需要把样式复制到每个单独的网页中
+  - 违反 `Separation of Concerns` （关注点分类原则）- 不同模块满足不同关注点
+  - 可以覆盖外部样式表中的样式
+
+- External stylesheets - 外部样式表（样式写在外部独立文件中） 
+
+  - `styles.css `
+
+- Inline styles - 行内样式（直接在HTML元素上应用样式）
+
+  - 违反 `Separation of Concerns` （关注点分类原则）
+
+  ```html
+  <p style="color: blue; font-weight: bold;">Lorem ipsum dolor sit amet consectetur</p>
+  ```
+
+  更好的使一段改变样式的方法：
+
+  ```html
+  <head>	
+  	<style>
+          #first {
+              color: blue;
+              font-weight: bold;
+          }
+      </style>
+  </head>
+  
+  <body>
+      <p id="first">Lorem ipsum dolor sit amet consectetur</p>
+      <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Ullam, hic!</p>
+  </body>
+  ```
+
+### 3 - Normalizing CSS（CSS一致化）
+
+不同浏览器渲染某些html元素可能不同
+
+- 解决工具：[normalize.css](https://necolas.github.io/normalize.css/)
+  - 提供默认样式确保不同浏览器渲染结果一致
+  - 将`normalize.css`链接另存为到电脑中
+
+链接进`html`：
+
+```html
+<link rel="stylesheet" href="css/normalize.css">
+```
+
+### 4 - Basic Selectors
+
+select elements for styling porposes:
+
+- Type
+- ID 
+- Class 
+- Attribute
+
+举例：
+
+1. Type
+
+```css
+body {
+	margin: 10px;
+}
+```
+
+2. ID & Class
+
+```html
+<section id="products">
+    <article class="product"></article>
+    <article class="product"></article>
+    <article class="product"></article>
+</section>
+```
+
+```css
+#products {
+
+}
+
+.product {
+    
+}
+```
+
+区别：ID - 不能有多个元素拥有同一个ID；Class - 多个元素可以共用一个类
+
+3. Attribute - 不常见
+
+
+```html
+<a href="https://google.com" target="_blank">Google</a>
+```
+
+```css
+a[target] {
+    
+}
+```
+
+```css
+a[href^="https"][href$=".com"] {
+	color: orange;
+}
+```
+
+### 5 - Relational Selectors（关系选择器）
+
+1. case 1：作用于全部后代
+
+```html
+<section id="products">
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+        <article>
+            <p>Lorem ipsum dolor sit amet.</p>
+        </article>
+    </section>
+```
+选中products嵌套的所有p标签：
+```css
+#products p {
+    color: orange;
+}
+```
+
+![image-20220303132100257](README.assets/image-20220303132100257.png)
+
+2. case 2：只作用于直接后代
+
+选中products嵌套的一级p标签：
+
+```css
+#products > p {
+    color: orange;
+}
+```
+
+![image-20220303132142791](README.assets/image-20220303132142791.png)
+
+3. case 3：选择同级元素（紧接着的下一个）
+
+```html
+<body>
+    <section id="products">
+        <p>Lorem ipsum dolor sit amet consectetur adipisicing elit.</p>
+        <article>
+            <p>Lorem ipsum dolor sit amet.</p>
+        </article>
+    </section>
+    <p>Lorem ipsum dolor sit amet.</p>
+    <p>Lorem ipsum dolor sit amet.</p>
+</body>
+```
+选中products后面紧跟的一个p标签：
+```css
+#products + p {
+    color: orange;
+}
+```
+
+![image-20220303132819778](README.assets/image-20220303132819778.png)
+
+4. case 4：所有同级
+
+选中products后面的所有p标签：
+
+```css
+#products ~ p {
+    color: orange;
+}
+```
+
+![image-20220303133024625](README.assets/image-20220303133024625.png)
+
+关系选择器总结：
+
+- cleaner markup - 不用声明很多id和class
+- 代码比较脆弱 - 取决于这个元素在DOM中的位置（移动元素，规则失效）
+- 效率不如基本选择器
+
+### 6 - Pseudo-class Selector（伪类选择器）
+
+伪类是浏览器默认添加的类，伪类以`:`开头
+
+- **first-child、last-child、first-of-type、last-of-type**
+
+`:first-child`表示第一个子元素（`last-child`）
+
+```html
+<body>
+    <article>
+        <p>Lorem ipsum dolor sit amet.</p>
+        <p>Lorem ipsum dolor sit amet.</p>
+    </article>
+</body>
+```
+
+```css
+article :first-child {
+    font-size: 140%;
+    font-style: italic;
+}
+```
+
+![image-20220303144216056](README.assets/image-20220303144216056.png)
+
+`first-of-type`表示不同类型标签的第一个元素；同理有`last-of-type`
+
+```html
+<body>
+    <article>
+        <h2>Heading</h2>
+        <p>Lorem ipsum dolor sit amet.</p>
+        <p>Lorem ipsum dolor sit amet.</p>
+    </article>
+</body>
+```
+
+```css
+article :first-of-type {
+    font-size: 140%;
+    font-style: italic;
+}
+```
+
+![image-20220303144014843](README.assets/image-20220303144014843.png)
+
+只应用于`p`标签：
+
+```css
+article p:first-of-type {
+    font-size: 140%;
+    font-style: italic;
+}
+
+article p:last-of-type {
+    font-weight: bold;
+}
+```
+
+![image-20220303150426521](README.assets/image-20220303150426521.png)
+
+- **nth-child**
+
+奇数行设为粉色
+
+```html
+<ul>
+    <li>Item 1</li>
+    <li>Item 2</li>
+    <li>Item 3</li>
+    <li>Item 4</li>
+    <li>Item 5</li>
+</ul>
+```
+
+```css
+ul li:nth-child(odd) {
+    color: deeppink;
+}
+```
+
+- **链接有关：link(未访问)、visited(访问过)、hover(悬浮)**
+
+```css
+a:visited, 
+a:link {
+    color: dodgerblue;
+}
+
+a:hover {
+    color:deeppink;
+}
+```
+
+### 7 - Pseudo-element Selectors（伪元素选择器）
+
+伪元素以`::`开头   
+
+伪类-伪元素区别：
+
+![image-20220303153229068](README.assets/image-20220303153229068.png)
+
+- **first-letter、first-line、selection、before**
+
+以前这么写：
+
+![image-20220303152719754](README.assets/image-20220303152719754.png)
+
+利用伪元素选择器只需修改css文件：
+
+```css
+p::first-letter {
+    font-size: 140%;
+    font-weight: bold;
+}
+```
+
+综合起来：
+
+```html
+<body>
+    <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Vero, quod ea? Fugiat
+        accusamus nulla amet maxime modi
+        quas ipsum debitis quisquam obcaecati ipsam. Quos neque dicta at culpa vel rem architecto suscipit commodi
+        eligendi. Exercitationem nemo inventore quo eaque molestiae sed, maiores veritatis, aspernatur numquam autem
+        nostrum similique, temporibus obcaecati!</p>
+</body>
+```
+
+```css
+p::first-letter {
+    font-size: 140%;
+    font-weight: bold;
+}
+
+p::first-line {
+    font-weight: bold;
+}
+
+p::selection {
+    background-color: pink;
+}
+
+p::before {
+    content: "...";
+    display: block;
+}
+```
+
+![image-20220303154132325](README.assets/image-20220303154132325.png)
+
+### 8 - Selectors Specificity（选择器优先级）
+
+给定元素应用了不止一种规则
+
+![image-20220303181519410](README.assets/image-20220303181519410.png)
+
+![image-20220303182018715](README.assets/image-20220303182018715.png)
+
+### 9 - Inheriance（继承）
+
+一些css特性从父类继承（一般与文字内容有关的属性都能继承）
+
+### 10 - Colors
+
+取色器 - Google搜索`color picker`
+
+表示颜色的方法：
+
+- 颜色名
+- RGB
+  - rgb()
+  - rgba() 加上透明度设置
+- HSL
+  - hsl()
+  - hsla()
+- 十六进制值
+
+### 11 - Gradients（渐变）
+
+```css
+background: linear-gradient(dodgeblue, yellow)
+```
+
+创建渐变css代码的工具：[gradient generator](https://cssgradient.io/)
+
+![image-20220303211331563](README.assets/image-20220303211331563.png)
+
+### 12 - Borders（边框）
+
+### 13 - Shadows（阴影）
+
+```html
+<body>
+    <div class="box">
+        <h1>Heading</h1>
+    </div>
+</body>
+```
+
+给元素增加阴影：
+
+```css
+.box {
+    width: 200px;
+    height: 200px;
+    background: dodgerblue;
+    box-shadow: 0 0 30px grey;
+}
+```
+
+给文字添加阴影：
+
+```css
+h1 {
+    color: white;
+    text-shadow: 3px 3px 5px rgba(0, 0, 0, 0.2);
+}
+```
+
