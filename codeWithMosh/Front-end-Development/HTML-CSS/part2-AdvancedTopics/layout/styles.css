@@ -1,0 +1,13 @@
+.container {
+    border: 3px solid lightgrey;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
+.box {
+    width: 5rem;
+    height: 5rem;
+    background: gold;
+    margin: 1rem;
+}

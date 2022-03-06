@@ -129,11 +129,11 @@ Prettier & Format On Save
 
 ## HTML Basics
 
-### 1- Introduction
+### 1 - Introduction
 
 ​	![image-20220302214443507](README.assets/image-20220302214443507.png)
 
-### 2- The Head Section
+### 2 - The Head Section
 
 - the head section give browser and search engine information about the web page
 
@@ -385,7 +385,7 @@ HTML有3种类型的列表：
 
 通用容器 - Generic
 
-- `<div>` - Block-level Element块级元素
+- **`<div>` - Block-level Element块级元素**
 
   ```html
   <head>	
@@ -408,13 +408,13 @@ HTML有3种类型的列表：
       </div>
   ```
 
-- `<span>`- Inline Element行内元素
+- **`<span>`- Inline Element行内元素**
 
   - 常用于给文本加样式
 
   ![image-20220302194126952](README.assets/image-20220302194126952.png)
 
-### 11- Semantic Elements（语义元素）
+### 11 - Semantic Elements（语义元素）
 
 ![image-20220302200853304](README.assets/image-20220302200853304.png)
 
