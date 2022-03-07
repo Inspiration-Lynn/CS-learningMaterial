@@ -505,3 +505,108 @@ p {
 - white-space
 - column-*
 - direction
+
+## Images (60m)
+
+### 1 - Introduction
+
+![image-20220306173733916](README.assets/image-20220306173733916.png)
+
+![image-20220306173820456](README.assets/image-20220306173820456.png)
+
+### 2 - Image Types and Formats
+
+![image-20220306175931121](README.assets/image-20220306175931121.png)
+
+- 位图
+
+  - 照片
+
+    ![image-20220306180056228](README.assets/image-20220306180056228.png)
+
+- 矢量图
+
+  - 简单图形、图标
+
+    ![image-20220306180128745](README.assets/image-20220306180128745.png)
+
+位图 & 矢量图对比：
+
+![image-20220306180154397](README.assets/image-20220306180154397.png)
+
+![image-20220306180233672](README.assets/image-20220306180233672.png)
+
+- icon网站：[Vector Icons and Stickers - PNG, SVG, EPS, PSD and CSS (flaticon.com)](https://www.flaticon.com/)
+
+### 3 - Content Images
+
+css拉伸位图会变模糊
+
+### 4 - Background Images
+
+```css
+body {
+    background: url(../images/bg-paper@2x.jpg);
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 100vh;
+}
+```
+
+### 5 - CSS Sprites
+
+![image-20220306185405846](README.assets/image-20220306185405846.png)
+
+减少HTTP请求的优化技巧：将所有图片组合到一个图片中，这样只需向服务器请求一次图片
+
+网站：[CSS Sprites Generator (toptal.com)](https://www.toptal.com/developers/css/sprite-generator)
+
+![image-20220306190200858](README.assets/image-20220306190200858.png)
+
+### 6 - Data URLs
+
+另一种减少HTTP请求的优化技巧
+
+Data URI Generator网站：[Data URI Generator - CSS Portal](https://www.cssportal.com/image-to-data/)
+
+问题：
+
+- Size of embedded code > size of the resource
+- Increased complexity
+- Slow on mobile
+
+### 7 - Clipping（裁剪）
+
+网站：[CSS Clip-Path Generator - CSS Portal](https://www.cssportal.com/css-clip-path-generator/)
+
+### 8 - Filter（滤镜）
+
+- greyscale
+- blur
+- contrast
+- brightness
+- saturate (饱和度)
+
+### 9 - Supporting High-density Screens
+
+### 10 - Resolution Switch
+
+- [Responsive Image Breakpoints Generator by Cloudinary (responsivebreakpoints.com)](https://responsivebreakpoints.com/)
+
+### 11 - Using Modern Image Format
+
+conversion to webp:
+
+![image-20220306231053047](README.assets/image-20220306231053047.png)
+
+### 12 - Art Direction
+
+- [earls.ca](https://earls.ca/)
+
+### 13 - Scalable Vector Graphics
+
+- [Customize and apply backgrounds fast | SVG Backgrounds](https://www.svgbackgrounds.com/)
+
+### 14 - Font Icons
+
+- [Font Awesome](https://fontawesome.com/)
