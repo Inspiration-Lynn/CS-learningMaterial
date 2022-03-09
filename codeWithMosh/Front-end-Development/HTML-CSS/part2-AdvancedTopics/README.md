@@ -610,3 +610,7 @@ conversion to webp:
 ### 14 - Font Icons
 
 - [Font Awesome](https://fontawesome.com/)
+
+## Forms
+
+![image-20220307114424079](README.assets/image-20220307114424079.png)
