@@ -847,3 +847,702 @@ padding: 20px 0 0 0;
 ![image-20220311165833049](README.assets/image-20220311165833049.png)
 
 ![image-20220311165846976](README.assets/image-20220311165846976.png)
+
+## 4- Composing Components（01:19）
+
+### 1 - Introduction
+
+![image-20220312124342374](README.assets/image-20220312124342374.png)
+
+### 2 - Composing Components
+
+项目`counter-app`
+
+counters.jsx:
+
+```jsx
+import React, { Component } from "react";
+import Counter from "./counter";
+
+class Counters extends Component {
+  state = {
+    counters: [
+      { id: 1, value: 0 },
+      { id: 2, value: 0 },
+      { id: 3, value: 0 },
+      { id: 4, value: 0 },
+    ],
+  };
+  render() {
+    return (
+      <div>
+        {this.state.counters.map((counter) => (
+          <Counter key={counter.id}></Counter>
+        ))}
+      </div>
+    );
+  }
+}
+
+export default Counters;
+```
+
+### 3 - Passing Data to Components
+
+- props属性
+
+counters.jsx:
+
+```jsx
+render() {
+    return (
+      <div>
+        {this.state.counters.map((counter) => (
+          <Counter key={counter.id} value={counter.value} selected={true} />
+        ))}
+      </div>
+    );
+  }
+```
+
+counter.jsx:
+
+```jsx
+state = {
+    value: this.props.value,
+  };
+```
+
+### 4 - Passing Children
+
+- children是props的一个属性，开闭标签之间的是children
+
+counters.jsx
+
+```jsx
+<Counter key={counter.id} value={counter.value} selected={true}>
+            <h4>Title #{counter.id}</h4>
+          </Counter>
+```
+
+### 5 - Debugging React Apps
+
+- 工具：chrome插件-React Developer Tools
+
+$r
+
+### 6 - Prop vs State
+
+区别：
+
+- props: include data that **input** to the component（只读的）
+- state: include data that are local or private to the component（其他组件不能访问这个组件的state，只能在组件内被访问）
+
+### 7 - Raising and Handling Events
+
+counter中添加删除按钮
+
+- The components that **owns** a piece of the state, should be the one **modifying** it.
+
+counter组件发起一个事件onDelete，父组件Counters处理这个事件handleDelete()
+
+![image-20220313104549284](README.assets/image-20220313104549284.png)
+
+counters.jsx添加：
+
+```jsx
+handleDelete = () => {
+    console.log("Delete handler called");
+  };
+```
+
+![image-20220313105125959](README.assets/image-20220313105125959.png)
+
+counter.jsx添加：
+
+![image-20220313105249416](README.assets/image-20220313105249416.png)
+
+### 8 - Updating the State
+
+counter.jsx:
+
+```jsx
+import React, { Component } from "react";
+
+class Counter extends Component {
+  state = {
+    value: this.props.counter.value,
+  };
+
+  handleIncrement = () => {
+    this.setState({ value: this.state.value + 1 });
+  };
+
+  render() {
+    return (
+      <div>
+        <span className={this.getBadgeClasses()}>{this.formatCount()}</span>
+        <button
+          onClick={() => this.handleIncrement()}
+          className="btn btn-secondary btn-sm"
+        >
+          Increment
+        </button>
+        <button
+          onClick={() => this.props.onDelete(this.props.counter.id)}
+          className="btn btn-danger btn-sm m-2"
+        >
+          Delete
+        </button>
+      </div>
+    );
+  }
+
+  getBadgeClasses() {
+    let classes = "badge m-2 badge-";
+    classes += this.state.value === 0 ? "warning" : "primary";
+    return classes;
+  }
+
+  formatCount() {
+    const { value: count } = this.state;
+    return count === 0 ? <span>Zero</span> : count;
+  }
+}
+
+export default Counter;
+```
+
+counters.jsx:
+
+```jsx
+import React, { Component } from "react";
+import Counter from "./counter";
+
+class Counters extends Component {
+  state = {
+    counters: [
+      { id: 1, value: 4 },
+      { id: 2, value: 0 },
+      { id: 3, value: 0 },
+      { id: 4, value: 0 },
+    ],
+  };
+
+  handleDelete = (counterID) => {
+    console.log("handleDelete called", counterID);
+    const counters = this.state.counters.filter((m) => m.id !== counterID);
+    this.setState({ counters });
+  };
+
+  render() {
+    return (
+      <div>
+        {this.state.counters.map((counter) => (
+          <Counter
+            key={counter.id}
+            onDelete={this.handleDelete}
+            counter={counter}
+          />
+        ))}
+      </div>
+    );
+  }
+}
+
+export default Counters;
+```
+
+### 9 - Single Source od Truth
+
+每个组件都有自己的state,counters组件有一个counter对象数组，counter组件有一个value,这个value值没有和counters里面的保持一致（`value: this.props.counter.value`，这句代码只在counter组件被实例化的时候调用了一次）
+
+解决：删掉counter组件中的本地state，建立唯一数据源
+
+![image-20220313112145824](README.assets/image-20220313112145824.png)
+
+### 10 - Removing the Local State
+
+- 被控组件（controlled component）: 没有自己的本地state，所有数据来自props（完全被父组件控制）
+
+  - **use props to display data & notify changes**
+
+  ![image-20220313112408369](README.assets/image-20220313112408369.png)
+
+counter.jsx:
+
+删除state，替换所有this.state
+
+```jsx
+import React, { Component } from "react";
+
+class Counter extends Component {
+  render() {
+    return (
+      <div>
+        <span className={this.getBadgeClasses()}>{this.formatCount()}</span>
+        <button
+          onClick={() => this.props.onIncrement(this.props.counter)}
+          className="btn btn-secondary btn-sm"
+        >
+          Increment
+        </button>
+        <button
+          onClick={() => this.props.onDelete(this.props.counter.id)}
+          className="btn btn-danger btn-sm m-2"
+        >
+          Delete
+        </button>
+      </div>
+    );
+  }
+
+  getBadgeClasses() {
+    let classes = "badge m-2 badge-";
+    classes += this.props.counter.value === 0 ? "warning" : "primary";
+    return classes;
+  }
+
+  formatCount() {
+    const { value } = this.props.counter;
+    return value === 0 ? "Zero" : value;
+  }
+}
+
+export default Counter;
+```
+
+counters.jsx:
+
+```jsx
+import React, { Component } from "react";
+import Counter from "./counter";
+
+class Counters extends Component {
+  state = {
+    counters: [
+      { id: 1, value: 4 },
+      { id: 2, value: 0 },
+      { id: 3, value: 0 },
+      { id: 4, value: 0 },
+    ],
+  };
+
+  handleReset = () => {
+    const counters = this.state.counters.map((c) => {
+      c.value = 0;
+      return c;
+    });
+    this.setState({ counters });
+  };
+
+  handleIncrement = (counter) => {
+    const counters = [...this.state.counters];
+    const index = counters.indexOf(counter);
+    counters[index].value++;
+    this.setState({ counters });
+  };
+
+  handleDelete = (counterID) => {
+    const counters = this.state.counters.filter((m) => m.id !== counterID);
+    this.setState({ counters });
+  };
+
+  render() {
+    return (
+      <div>
+        <button onClick={this.handleReset} className="btn btn-primary m-2">
+          Reset
+        </button>
+        {this.state.counters.map((counter) => (
+          <Counter
+            key={counter.id}
+            onDelete={this.handleDelete}
+            onIncrement={this.handleIncrement}
+            counter={counter}
+          />
+        ))}
+      </div>
+    );
+  }
+}
+
+export default Counters;
+```
+
+### 11 - Multiple Components in Sync
+
+增加导航栏
+
+原来组件结构：
+
+![image-20220313143806596](README.assets/image-20220313143806596.png)
+
+修改组件结构：
+
+![image-20220313143824653](README.assets/image-20220313143824653.png)
+
+index.js将root组件修改回`App`:
+
+![image-20220313144030829](README.assets/image-20220313144030829.png)
+
+App.js中用一个基本的bootstrap模板替代默认模板：
+
+[Navbar-bootstrap资源](https://getbootstrap.com/docs/5.1/components/navbar/)
+
+navbar.jsx加上：
+
+```jsx
+<nav class="navbar navbar-light bg-light">
+        <a class="navbar-brand" href="#">
+          Navbar
+        </a>
+      </nav>
+```
+
+如何在导航栏Navbar显示counter的数量？
+
+- 当两个组件是上下层的关系时可以共享、同步数据
+- 此处Counters、Navbar非上下层关系
+- 两个组件没有上下父子级别的关系时想要共享、同步数据 => 数据上移
+
+![image-20220313150636268](README.assets/image-20220313150636268.png)
+
+### 12 - Lifting the State Up
+
+1. 将state和操作state的所有方法移动到App组件中
+
+2. Counters的props对象中设置Event-`onReset`、`onDelete`、`onIncrement`; 
+   1. 在Counters组件中不处理事件，而是将事件冒泡给父组件App
+
+3. counters[]数据源修改 
+4. 在导航栏显示总计数
+
+App.js:
+
+```jsx
+import React, { Component } from "react";
+import "./App.css";
+import Navbar from "./components/navbar";
+import Counters from "./components/counters";
+
+class App extends Component {
+  state = {
+    counters: [
+      { id: 1, value: 4 },
+      { id: 2, value: 0 },
+      { id: 3, value: 0 },
+      { id: 4, value: 0 },
+    ],
+  };
+
+  handleReset = () => {
+    const counters = this.state.counters.map((c) => {
+      c.value = 0;
+      return c;
+    });
+    this.setState({ counters });
+  };
+
+  handleIncrement = (counter) => {
+    const counters = [...this.state.counters];
+    const index = counters.indexOf(counter);
+    counters[index].value++;
+    this.setState({ counters });
+  };
+
+  handleDelete = (counterID) => {
+    const counters = this.state.counters.filter((m) => m.id !== counterID);
+    this.setState({ counters });
+  };
+
+  render() {
+    return (
+      <React.Fragment>
+        <Navbar
+          totalCounters={this.state.counters.filter((c) => c.value > 0).length}
+        />
+        <main className="container">
+          <Counters
+            counters={this.state.counters}
+            onReset={this.handleReset}
+            onIncrement={this.handleIncrement}
+            onDelete={this.handleDelete}
+          />
+        </main>
+      </React.Fragment>
+    );
+  }
+}
+
+export default App;
+```
+
+counters.jsx:
+
+```jsx
+import React, { Component } from "react";
+import Counter from "./counter";
+
+class Counters extends Component {
+  render() {
+    return (
+      <div>
+        <button onClick={this.props.onReset} className="btn btn-primary m-2">
+          Reset
+        </button>
+        {this.props.counters.map((counter) => (
+          <Counter
+            key={counter.id}
+            onDelete={this.props.onDelete}
+            onIncrement={this.props.onIncrement}
+            counter={counter}
+          />
+        ))}
+      </div>
+    );
+  }
+}
+
+export default Counters;
+```
+
+navbar.jsx:
+
+```jsx
+import React, { Component } from "react";
+
+class Navbar extends Component {
+  state = {};
+  render() {
+    return (
+      <nav class="navbar navbar-light bg-light">
+        <a class="navbar-brand" href="#">
+          Navbar
+          <span className="badge badge-pill badge-secondary">
+            {this.props.totalCounters}
+          </span>
+        </a>
+      </nav>
+    );
+  }
+}
+
+export default Navbar;
+```
+
+### 13 - Stateless Functional Components
+
+- 像组件Navbar，只有一个返回函数render()，也没有state，只从props获取数据
+- 可以将这类组件转换为Stateless Functional Components（不使用类定义这个组件，而使用函数）
+
+快捷键：sfc
+
+```jsx
+const Navbar = (props) => {
+  return (
+    <nav class="navbar navbar-light bg-light">
+      <a class="navbar-brand" href="#">
+        Navbar
+        <span className="badge badge-pill badge-secondary">
+          {props.totalCounters}
+        </span>
+      </a>
+    </nav>
+  );
+};
+```
+
+### 14 - Destructuring Arguments
+
+```jsx
+const { onReset, counters, onIncrement, onDelete } = this.props;
+```
+
+------
+
+### 15 - Lifecycle Hooks
+
+一些可以加入到组件的特殊方法（Lifecycle Hooks），react会自动在不同阶段调用这些方法 
+
+组件在生命周期经历的阶段：
+
+1. MOUNT - 创建组件示例并插入到DOM
+
+![image-20220313165237837](README.assets/image-20220313165237837.png)
+
+2. UPDATE - 组件的state或props改变时发生
+
+![image-20220313165424254](README.assets/image-20220313165424254.png)
+
+3. UNMOUNT - 组件被从DOM中移出，如删除
+
+![image-20220313165524057](README.assets/image-20220313165524057.png)
+
+### 16 - Mounting Phase
+
+1. constructor: 仅在实例化的时候调用一次，常用于将props中的外部数据赋给state
+
+```jsx
+constructor(props) {
+	super(props);
+    console.log("App - Constructor");
+	this.state = props.something;
+}
+```
+
+2. render
+3. componentDidMount: 这个钩子在组件被加入DOM后调用，perfect place to make AJAX called to get data from the server
+
+### 17 - Updating Phase
+
+1. render
+
+2. componentDidUpdate - 组件被更新后调用（常用于当有变化时，通过AJAX请求重新向服务器请求数据）
+
+   ```jsx
+   componentDidUpdate(preProps, prevState) {
+   	console.log('preProps', preProps);
+   	console.log('prevState', prevState);
+       if(preProps.counter.value != this.props.counter.value) 	{
+           // Ajax call and get new data from the server
+   	}
+   }
+   ```
+
+### 18 - Unmounting Phase
+
+componentWillUnmount - 组件被移除之前做一些清理工作，如计时器、监听器、内存优化
+
+```jsx
+componentWillUnmount() {
+	console.log("counter - Unmount")
+}
+```
+
+------
+
+### 19 - Excercise - Decrement Button
+
+[Bootstrap-Gridlayout](https://getbootstrap.com/docs/5.1/layout/grid/#example)
+
+### 20 - Solution - Decrement Button
+
+### 21 - Exercise - Like Component
+
+vidly
+
+![image-20220313185731972](README.assets/image-20220313185731972.png)
+
+### 22 - Solution - Like Component
+
+- [fa-heart-o: Font Awesome Icons](https://fontawesome.com/v4/icon/heart-o)
+- [fa-heart: Font Awesome Icons](https://fontawesome.com/v4/icon/heart)
+
+在components下创建文件夹common，用来存储所有可复用的组件
+
+like.jsx
+
+- Input: liked: boolean
+- Output: onClick
+
+```jsx
+import React, { Component } from "react";
+
+const Like = (props) => {
+  let classes = "fa fa-heart";
+  if (!props.liked) classes += "-o";
+  return (
+    <i
+      onClick={props.onClick}
+      style={{ cursor: "pointer" }}
+      className={classes}
+      aria-hidden="true"
+    ></i>
+  );
+};
+
+export default Like;
+```
+
+movies.jsx:
+
+```jsx
+import React, { Component } from "react";
+import { getMovies } from "../services/fakeMovieService";
+import Like from "./common/like";
+
+class Movies extends Component {
+  state = {
+    movies: getMovies(),
+  };
+
+  handleDelete = (movie) => {
+    const movies = this.state.movies.filter((m) => m._id !== movie._id);
+    this.setState({ movies });
+  };
+
+  handleLike = (movie) => {
+    const movies = [...this.state.movies];
+    const index = movies.indexOf(movie);
+    movies[index] = { ...movies[index] };
+    movies[index].liked = !movies[index].liked;
+    this.setState({ movies });
+  };
+
+  render() {
+    const { length: count } = this.state.movies;
+
+    if (count === 0) return <p>There is no movies in the database.</p>;
+
+    return (
+      <React.Fragment>
+        <p>Showing {count} movies in the database.</p>
+        <table className="table">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Genre</th>
+              <th>Stock</th>
+              <th>Rate</th>
+              <th />
+              <th />
+            </tr>
+          </thead>
+          <tbody>
+            {this.state.movies.map((movie) => (
+              <tr key={movie._id}>
+                <td>{movie.title}</td>
+                <td>{movie.genre.name}</td>
+                <td>{movie.numberInStock}</td>
+                <td>{movie.dailyRentalRate}</td>
+                <td>
+                  <Like
+                    liked={movie.liked}
+                    onClick={() => this.handleLike(movie)}
+                  />
+                </td>
+                <td>
+                  <button
+                    onClick={() => this.handleDelete(movie)}
+                    className="btn btn-danger btn-sm"
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </React.Fragment>
+    );
+  }
+}
+
+export default Movies;
+```
+
+效果图：
+
+![image-20220313203245501](README.assets/image-20220313203245501.png)
+
