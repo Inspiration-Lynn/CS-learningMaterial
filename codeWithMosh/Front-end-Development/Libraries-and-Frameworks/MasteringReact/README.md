@@ -1546,3 +1546,682 @@ export default Movies;
 
 ![image-20220313203245501](README.assets/image-20220313203245501.png)
 
+## 5- Pagination, Filtering, and Sorting（01:47）
+
+### 1 - Introduction
+
+目标：
+
+![image-20220313203805039](README.assets/image-20220313203805039.png)
+
+### 2 - Exercise- Pagination Component
+
+### 3 - Pagination-Component Interface
+
+- 当想创建一个可复用的组件时，要想清楚组件的接口：这个组件要接受什么（input），要发起什么事件（output）
+- 通过想怎么用这个组件，定义其接口
+
+要分页，需要传入总数和每页的数目
+
+![image-20220313205735178](README.assets/image-20220313205735178.png)
+
+### 4 - Pagination-Displaying Pages（显示页数）
+
+```powershell
+npm i lodash@4.17.10
+```
+
+难想
+
+```jsx
+const { itemsCount, pageSize, onPageChange } = props;
+
+  const pageCount = Math.ceil(itemsCount / pageSize);
+  const pages = _.range(1, pageCount + 1);
+
+  if (pages === 1) return null;
+  // [1 ... pageCount].map()
+  
+  return (
+    <nav>
+      <ul className="pagination">
+        {pages.map((page) => (
+          <li key={page} className="page-item">
+            <a className="page-link">
+              {page}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+```
+
+### 5 - Pagination-Handling Page Changes
+
+增加pagination组件的输入：currentPage
+
+```jsx
+<li key={page} className={page === currentPage ? "page-item active" : "page-item"}>
+```
+
+### 6 - Pagination-Pagination Data
+
+文件夹：all sort of utilities and functions
+
+### 7 - Pagination-Type Checking
+
+安装类型检测库：
+
+```powershell
+npm i prop-types@15.6.2
+```
+pagination.jsx:
+```jsx
+import PropTypes from 'prop-types'; 
+
+Pagination.propTypes = {
+  itemsCount: PropTypes.number.isRequired,
+  pageSize: PropTypes.number.isRequired,
+  currentPage: PropTypes.number.isRequired,
+  onPageChange: PropTypes.func.isRequired,
+};
+```
+当输入错误的类型时，浏览器会产生warning
+
+![image-20220314194005882](README.assets/image-20220314194005882.png)
+
+### 8 - Excercise- ListGroup Component
+
+![image-20220314104614448](README.assets/image-20220314104614448.png)
+
+bootstrap-List group
+
+### 9 - Filtering-Component Interface
+
+增加可复用组件ListGroup
+
+state增加：genres: [], movies: [],
+
+```jsx
+componentDidMount() {
+    this.setState({ movies: getMovies(), genres: getGenres() });
+}
+```
+
+```jsx
+<ListGroup
+    items={genres}
+    textProperty="_id"
+    valueProperty="name"
+    onItemSelected={this.handleGenreSelect}
+ />
+```
+
+- input: items
+- event: onItemSelected
+
+### 10 - Filtering-Displaying Items
+
+增加组件可复用性的技巧：textProperty、valueProperty
+
+```jsx
+<ListGroup
+    items={genres}
+    textProperty="name"
+    valueProperty="_id"
+    onItemSelected={this.handleGenreSelect}
+/>
+```
+
+listGroup.jsx:
+
+```jsx
+const ListGroup = (props) => {
+  const { items, textProperty, valueProperty, currentGenre } = props;
+
+  return (
+    <ul className="list-group">
+      {items.map((item) => (
+        <li
+          key={item[valueProperty]}
+          className="list-group-item"
+          aria-current="true"
+          onClick={() => props.onItemSelected(item)}
+        >
+          {item[textProperty]}
+        </li>
+      ))}
+    </ul>
+  );
+};
+```
+
+### 11 - Filtering-Default Props
+
+textProperty、valueProperty使得接口变得复杂，如何解决？
+
+删除这两个组件输入，在listGroup.jsx增加：
+
+```jsx
+ListGroup.defaultProps = {
+  textProperty: "name",
+  valueProperty: "id",
+};
+```
+
+### 12 - Filtering-Handing Selection
+
+ListGroup.props增加`selectedItem`
+
+movies.jsx:
+
+```jsx
+state = {
+    movies: [],
+    currentPage: 1,
+    pageSize: 4,
+    genres: [],
+    selectedGenre: "",
+};
+
+handleGenreSelect = (genre) => {
+    this.setState({ selectedGenre: genre });
+};
+
+<ListGroup
+    items={genres}
+    selectedItem={selectedGenre}
+    onItemSelected={this.handleGenreSelect}
+    />
+```
+
+listGroup.jsx:
+
+```jsx
+className={
+    item === selectedItem ? "list-group-item active" : "list-group-item"
+    }
+```
+
+### 13 - Filtering-Implementing Filtering
+
+```jsx
+// filter first, then paginate
+const filtered = selectedGenre ? allMovies.filter((m) => m.genre._id === selectedGenre._id) : allMovies;
+const movies = paginate(filtered, currentPage, pageSize);
+```
+
+修改分页组件的`count`为`filtered.length`
+
+### 14 - Filtering-Adding All Genres
+
+没思路
+
+movies.jsx:
+
+```jsx
+componentDidMount() {
+    const genres = [{ name: "All Genres" }, ...getGenres()];
+    this.setState({ movies: getMovies(), genres });
+  }
+
+
+// render(): filter first, then paginate
+const filtered = selectedGenre && selectedGenre._id ? allMovies.filter((m) => m.genre._id === selectedGenre._id) : allMovies;
+const movies = paginate(filtered, currentPage, pageSize);
+```
+
+------
+
+### 15 - Sorting-Extracting MoviesTable
+
+- issue: mix level of abstraction
+  - 让所有组件在抽象级别上一致（ListGroup MoviesTable Pagination）
+
+新建组件-MoviesTable
+
+### 16 - Sorting-Raising the Sort Event
+
+没什么难的，略
+
+### 17 - Sorting-Implementig Sort
+
+- **handler的实现思路：在handle中更新state，会引起重新渲染，这样在render()中明确具体要展示给用户的内容**
+
+state加入：
+
+```jsx
+sortColumn: { path: "title", order: "asc" }
+```
+
+```jsx
+handleSort = (path) => {
+    const sortColumn = { ...this.state.sortColumn };
+    if (sortColumn.path === path) {
+      sortColumn.order = sortColumn.order === "asc" ? "desc" : "asc";
+    } else {
+      sortColumn.path = path;
+      sortColumn.order = "asc";
+    }
+    this.setState({ sortColumn });
+  };
+
+// filter -> sort -> paginate
+const filtered =
+      selectedGenre && selectedGenre._id ? allMovies.filter((m) => m.genre._id === selectedGenre._id) : allMovies;
+const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
+const movies = paginate(sorted, currentPage, pageSize);
+```
+
+### 18 - Sorting-Moving Responsibility
+
+重要思想：提高可复用性（MoviesTable组件需要自己处理排序）
+
+将MoviesTable改为类，增加排序方法
+
+movies.jsx:
+
+```jsx
+handleSort = (sortColumn) => {
+    this.setState({ sortColumn });
+  };
+
+<MoviesTable
+    movies={movies}
+    sortColumn={sortColumn}   // 确保页面被重新渲染时显示之前的sort
+    onLike={this.handleLike}
+    onDelete={this.handleDelete}
+    onSort={this.handleSort}
+    />
+```
+
+moviesTable.jsx:
+
+```jsx
+import React, { Component } from "react";
+import Like from "./common/like";
+
+class MoviesTable extends Component {
+  raiseSort = (path) => {
+    const sortColumn = { ...this.props.sortColumn };
+    if (sortColumn.path === path) {
+      sortColumn.order = sortColumn.order === "asc" ? "desc" : "asc";
+    } else {
+      sortColumn.path = path;
+      sortColumn.order = "asc";
+    }
+    // raise sort event
+    this.props.onSort(sortColumn);
+  };
+  render() {
+    const { movies, onLike, onDelete } = this.props;
+
+    return (
+      <table className="table">
+        <thead>
+          <tr>
+            <th onClick={() => this.raiseSort("title")}>Title</th>
+            <th onClick={() => this.raiseSort("genre.name")}>Genre</th>
+            <th onClick={() => this.raiseSort("numberInStock")}>Stock</th>
+            <th onClick={() => this.raiseSort("dailyRentalRate")}>Rate</th>
+            <th />
+            <th />
+          </tr>
+        </thead>
+        <tbody>
+          {movies.map((movie) => (
+            <tr key={movie._id}>
+              <td>{movie.title}</td>
+              <td>{movie.genre.name}</td>
+              <td>{movie.numberInStock}</td>
+              <td>{movie.dailyRentalRate}</td>
+              <td>
+                <Like liked={movie.liked} onClick={() => onLike(movie)} />
+              </td>
+              <td>
+                <button
+                  onClick={() => onDelete(movie)}
+                  className="btn btn-danger btn-sm"
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    );
+  }
+}
+
+export default MoviesTable;
+```
+
+### 19 - Sorting-Extracting TabelHeader
+
+- 难
+
+新建通用组件-TableHeader
+
+接口：columns: array、sortColumn: object、onSort: function
+
+tableHeaders.jsx:
+
+```jsx
+import React, { Component } from "react";
+
+// input: columns:array
+// sortColumn: object
+// onSort: function
+
+class TableHeader extends Component {
+  raiseSort = (path) => {
+    const sortColumn = { ...this.props.sortColumn };
+    if (sortColumn.path === path) {
+      sortColumn.order = sortColumn.order === "asc" ? "desc" : "asc";
+    } else {
+      sortColumn.path = path;
+      sortColumn.order = "asc";
+    }
+    // raise sort event
+    this.props.onSort(sortColumn);
+  };
+  render() {
+    return (
+      <thead>
+        <tr>
+          {this.props.columns.map((column) => (
+            <th
+              key={column.path || column.key}
+              onClick={() => this.raiseSort(column.path)}
+            >
+              {column.label}
+            </th>
+          ))}
+        </tr>
+      </thead>
+    );
+  }
+}
+
+export default TableHeader;
+```
+
+moviesTable.jsx:
+
+```jsx
+import React, { Component } from "react";
+import Like from "./common/like";
+import TableHeader from "./common/tabelHeader";
+
+class MoviesTable extends Component {
+  columns = [
+    { path: "title", label: "Title" },
+    { path: "genre.name", label: "Genre" },
+    { path: "numberInStock", label: "Stock" },
+    { path: "dailyRentalRate", label: "Rate" },
+    { key: "like" },
+    { key: "delete" },
+  ];
+
+  render() {
+    const { movies, sortColumn, onLike, onDelete, onSort } = this.props;
+
+    return (
+      <table className="table">
+        <TableHeader
+          columns={this.columns}
+          sortColumn={sortColumn}
+          onSort={onSort}
+        />
+
+        <tbody>
+          {movies.map((movie) => (
+            <tr key={movie._id}>
+              <td>{movie.title}</td>
+              <td>{movie.genre.name}</td>
+              <td>{movie.numberInStock}</td>
+              <td>{movie.dailyRentalRate}</td>
+              <td>
+                <Like liked={movie.liked} onClick={() => onLike(movie)} />
+              </td>
+              <td>
+                <button
+                  onClick={() => onDelete(movie)}
+                  className="btn btn-danger btn-sm"
+                >
+                  Delete
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    );
+  }
+}
+
+export default MoviesTable;
+```
+
+### 20 - Sorting-Extracting TableBody
+
+封装成可复用组件：
+
+![image-20220315101651325](README.assets/image-20220315101651325.png)
+
+tableBody.jsx:
+
+```jsx
+<tbody>
+    {data.map((item) => (
+        <tr key={item.lable}>
+            {columns.map((column) => (
+                <td>{_.get(item, column.path)}</td>
+            ))}
+        </tr>
+    ))}
+</tbody>
+```
+
+### 21 - Sorting-Rendering Cell Content
+
+- jsx表达式被编译成的react element实际上就是js对象
+
+处理点赞列和删除列：
+
+```jsx
+columns = [
+    { path: "title", label: "Title" },
+    { path: "genre.name", label: "Genre" },
+    { path: "numberInStock", label: "Stock" },
+    { path: "dailyRentalRate", label: "Rate" },
+    {
+      key: "like",
+      content: (movie) => (
+        <Like liked={movie.liked} onClick={() => this.props.onLike(movie)} />
+      ),
+    },
+    {
+      key: "delete",
+      content: (movie) => (
+        <button
+          onClick={() => this.props.onDelete(movie)}
+          className="btn btn-danger btn-sm"
+        >
+          Delete
+        </button>
+      ),
+    },
+  ];
+```
+
+```jsx
+renderCell = (item, column) => {
+    if (column.content) return column.content(item);
+    return _.get(item, column.path);
+  };
+```
+
+### 22 - Sorting-Unique Keys
+
+```jsx
+createKey = (item, column) => {
+    return item.id + (column.path || column.key);
+  };
+
+  render() {
+    const { data, columns } = this.props;
+    return (
+      <tbody>
+        {data.map((item) => (
+          <tr key={item._id}>
+            {columns.map((column) => (
+              <td key={this.createKey(item, column)}>
+                {this.renderCell(item, column)}
+              </td>
+            ))}
+          </tr>
+        ))}
+      </tbody>
+    );
+  }
+```
+
+### 23 - Sorting-Adding  the Sort Icon
+
+tableHeader.jsx:
+
+```jsx
+<th
+    className="clickable"
+    key={column.path || column.key}
+    onClick={() => this.raiseSort(column.path)}
+    >
+    {column.label} {this.renderSortIcon(column)}
+</th>
+```
+
+```jsx
+renderSortIcon = (column) => {
+    const sortColumn = { ...this.props.sortColumn };
+    if (column.path !== sortColumn.path) return null;
+    if (sortColumn.order === "asc") return <i className="fa fa-sort-asc"></i>;
+    else return <i className="fa fa-sort-desc"></i>;
+  };
+```
+
+index.css:
+
+```css
+.clickable {
+  cursor: pointer;
+}
+```
+
+### 24 - Sorting-Extracting Table
+
+抽取可复用组件Table
+
+table.jsx:
+
+```jsx
+import React from "react";
+import TableHeader from "./tabelHeader";
+import TableBody from "./tableBody";
+
+const Table = (props) => {
+  const { columns, sortColumn, onSort, data } = props;
+  return (
+    <table className="table">
+      <TableHeader columns={columns} sortColumn={sortColumn} onSort={onSort} />
+      <TableBody data={data} columns={columns} />
+    </table>
+  );
+};
+
+export default Table;
+```
+
+moviesTable.jsx接口：
+
+```jsx
+<Table
+    columns={this.columns}
+    sortColumn={sortColumn}
+    onSort={onSort}
+    data={movies}
+    />
+```
+
+### 25 - Sorting-Extracting a Method
+
+封装筛选、排序、分页逻辑：
+
+```jsx
+getPagedData = () => {
+    const {
+      currentPage,
+      pageSize,
+      movies: allMovies,
+      selectedGenre,
+      sortColumn,
+    } = this.state;
+
+    // filter -> sort -> paginate
+    const filtered =
+      selectedGenre && selectedGenre._id
+        ? allMovies.filter((m) => m.genre._id === selectedGenre._id)
+        : allMovies;
+
+    const sorted = _.orderBy(filtered, [sortColumn.path], [sortColumn.order]);
+    const movies = paginate(sorted, currentPage, pageSize);
+
+    return { totalCount: filtered.length, data: movies };
+  };
+```
+
+```jsx
+const { totalCount, data: movies } = this.getPagedData();
+```
+
+### 26 - Destructuring Arguments
+
+修改参数获取方式
+
+原：
+
+```jsx
+const Table = (props) => {
+  const { columns, sortColumn, onSort, data } = props;
+  return (
+    <table className="table">
+      <TableHeader columns={columns} sortColumn={sortColumn} onSort={onSort} />
+      <TableBody data={data} columns={columns} />
+    </table>
+  );
+};
+```
+
+now:
+
+```jsx
+const Table = ({ columns, sortColumn, onSort, data }) => {
+  return (
+    <table className="table">
+      <TableHeader columns={columns} sortColumn={sortColumn} onSort={onSort} />
+      <TableBody data={data} columns={columns} />
+    </table>
+  );
+};
+```
+
+### 27 - Summary
+
+- Component Design
+- Component Interface
+- Reusable Components
+- Refactoring
+- Writing Clean Code
+
