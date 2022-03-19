@@ -8,6 +8,8 @@
 
 vs code插件：`Simple React Snippets` `prettier`
 
+配置prettier
+
 ### 2 - 第一个React App
 
 环境：Node >= 14.0.0 & npm >= 5.6
@@ -2704,4 +2706,288 @@ const MovieForm = ({ match, history }) => {
 export default MovieForm;
 ```
 
-### 
+## 7- Forms（01:34）
+
+### 1 - Introduction
+
+- 登录
+- 注册
+- 搜索栏
+
+### 2 - Building a Bootstrap Form
+
+构建登录表单
+
+1. 构建LoginForm组件，新建路由
+2. LoginForm组件加入Form
+
+### 3 - Handling Form Submission
+
+设置表单的onSubmit事件，禁止提交后网页默认重新加载
+
+```jsx
+handleSubmit = (e) => {
+    e.preventDefault();
+
+    // Call the server
+    console.log("Submitted");
+  };
+
+ <form onSubmit={this.handleSubmit}>
+```
+
+### 4 - Refs（能不用就不用）
+
+在react中不能用document对象，因为react是对dom的封装
+
+- 需要访问DOM对象：refs
+
+this.uername.current返回reference of dom element 
+
+![image-20220317184000425](README.assets/image-20220317184000425.png)
+
+![image-20220317184029720](README.assets/image-20220317184029720.png)
+
+### 5 - Controlled Elements
+
+- 理解！很重要
+
+- single source of truth
+  - 将Username和Password元素转换成受控元素（去除input域自己的state，只保留整个类的state，以保证single source of truth）
+
+![image-20220317185749058](README.assets/image-20220317185749058.png)
+
+在input增加属性value，绑定this.state域
+
+![image-20220317185724213](README.assets/image-20220317185724213.png)
+
+在input添加事件onChange，当用户在表单中输入内容时，触发函数handleChange，将表单中的内容更新到state，因而引起重新渲染
+
+![image-20220317190539916](README.assets/image-20220317190539916.png)
+
+### 6 - Handling Multiple Inputs
+
+- work with property of an object dynamically: []
+
+增加属性-name
+
+![image-20220317190932171](README.assets/image-20220317190932171.png)
+
+![image-20220317191122453](README.assets/image-20220317191122453.png)
+
+- state和表单同步
+
+### 7 - Common Errors
+
+- 表单组件中，初始化state对象时要么用空字符串，要么用从服务器获得的数据
+
+
+### 8 - Extracting a Reusable Input
+
+- Dont repeat yourself
+
+![image-20220317191939433](README.assets/image-20220317191939433.png)
+
+抽象复用组件Input：
+
+![image-20220317193057649](README.assets/image-20220317193057649.png)
+
+使用组件：
+
+![image-20220317193116175](README.assets/image-20220317193116175.png)
+
+------
+
+### 9 - Validation
+
+### 10 - A Basic Validation Implementation
+
+![image-20220317203547554](README.assets/image-20220317203547554.png)
+
+![image-20220317203706063](README.assets/image-20220317203706063.png)
+
+### 11 - Displaying Validation Errors
+
+给组件Input加上：显示错误信息的提示
+
+当error不为null时，显示错误提醒
+
+![image-20220317210746458](README.assets/image-20220317210746458.png)
+
+![image-20220317211013496](README.assets/image-20220317211013496.png)
+
+使得errors永远返回一个对象，避免在组件属性中传递null
+
+![image-20220317211355820](README.assets/image-20220317211355820.png)
+
+效果：
+
+![image-20220317211750495](README.assets/image-20220317211750495.png)
+
+### 12 - Validation on Change
+
+![image-20220317232310933](README.assets/image-20220317232310933.png)
+
+![image-20220317232323672](README.assets/image-20220317232323672.png)
+
+### 13 - Joi验证库
+
+Google搜索：npm joi
+
+```powershell
+npm i joi-browser@13.4
+```
+
+![image-20220317233316781](README.assets/image-20220317233316781.png)
+
+定义schema
+
+![image-20220317233329446](README.assets/image-20220317233329446.png)
+
+
+
+### 14 - Validating a Form Using Joi
+
+- 有难度
+
+使用Joi重写validate()
+
+Joi返回对象：
+
+![image-20220317234126956](README.assets/image-20220317234126956.png)
+
+![image-20220317234516067](README.assets/image-20220317234516067.png)
+
+写法改进：
+
+![image-20220317234900994](README.assets/image-20220317234900994.png)
+
+### 15 - Validating a Field Using Joi
+
+使用Joi重写validateProperty()
+
+![image-20220318000215812](README.assets/image-20220318000215812.png)
+
+------
+
+### 16 - Disabling the Submit Button
+
+禁用提交按钮，直到表单数据合法
+
+![image-20220318000601937](README.assets/image-20220318000601937.png)
+
+------
+
+**-----------refactor code------------**
+
+### 17 - Code Review
+
+看看LoginForm哪些部分需要抽取，放到可复用组件中
+
+- 如何分析
+
+validate()、validateProperty()、handleChange()、handleSubmit()上半部分
+
+### 18 - Extracting a Reusable Form
+
+- 下次创建表单时，只需：
+  - 创建state
+  - 设置表单的schema
+  - 确定当表单提交时需要干什么-doSubmit()
+  - 设计当表单渲染完后返回什么-render()
+
+为了抽取可复用组件，将所有account换为data，LoginForm继承Form
+
+![image-20220318095639366](README.assets/image-20220318095639366.png)
+
+form.jsx:
+
+```jsx
+import React, { Component } from "react";
+import Joi from "joi-browser";
+
+class Form extends Component {
+  state = { data: {}, errors: {} };
+
+  // validate the whole form
+  validate = () => {
+    const options = {
+      abortEarly: false,
+    };
+    const { error } = Joi.validate(this.state.data, this.schema, options);
+    if (!error) return null;
+
+    // get the array and map into our errors object
+    const errors = {};
+    for (let item of error.details) {
+      errors[item.path[0]] = item.message;
+    }
+
+    return errors;
+  };
+
+  //validate an input field
+  validateProperty = ({ name, value }) => {
+    const obj = { [name]: value };
+    const schema = { [name]: this.schema[name] };
+    const { error } = Joi.validate(obj, schema);
+
+    return error ? error.details[0].message : null;
+  };
+
+  handleSubmit = (e) => {
+    e.preventDefault();
+
+    // once submit, validate the whole form
+    const errors = this.validate();
+    this.setState({ errors: errors || {} });
+    if (errors) return;
+
+    this.doSubmit();
+  };
+
+  handleChange = ({ currentTarget: input }) => {
+    // validate the current input field
+    const errors = { ...this.state.errors };
+    const errorMessage = this.validateProperty(input);
+    if (errorMessage) errors[input.name] = errorMessage;
+    else delete errors[input.name];
+
+    const data = { ...this.state.data };
+    data[input.name] = input.value;
+    this.setState({ data, errors });
+  };
+}
+
+export default Form;
+```
+
+### 19 - Extracting Helper Rendering Methods
+
+- simplify render method
+
+![image-20220318101644480](README.assets/image-20220318101644480.png)
+
+![image-20220318101707983](README.assets/image-20220318101707983.png)
+
+![image-20220318101621460](README.assets/image-20220318101621460.png)
+
+### 20 - Register Form
+
+- 封装太香了！
+
+
+### 21 - Code Review
+
+### 22 - Exercise 2- Movie Form
+
+- 好难
+
+
+### 23 - Code Review
+
+### 24 - Exercise 3- Search Movies
+
+### 25 - Code Review
+
+- 好难
