@@ -2991,3 +2991,222 @@ export default Form;
 ### 25 - Code Review
 
 - 好难
+
+## 8- Calling Backend Services (01:42)
+
+### 1 - Introduction
+
+### 2 - JSON Placeholder
+
+- fake backend: https://jsonplaceholder.typicode.com/
+
+- chrome插件：JSON view
+
+### 3 - Http Clients
+
+发送http的库
+
+![image-20220319220641389](README.assets/image-20220319220641389.png)
+
+本课使用Axios
+
+```
+npm i axios@0.18
+```
+
+### 4 - Getting Data
+
+![image-20220319222345605](README.assets/image-20220319222345605.png)
+
+### 5 - Creating Data
+
+![image-20220319224524815](README.assets/image-20220319224524815.png)
+
+### 6 - Lifecycle of a Request
+
+开发者工具-网络
+
+### 7 - Updating Data
+
+- put: 更新所有属性
+- patch: 更新一个或多个属性
+
+![image-20220320110830550](README.assets/image-20220320110830550.png)
+
+### 8 - Deleting Data
+
+![image-20220320111040360](README.assets/image-20220320111040360.png)
+
+### 9 - Optimistic vs Pessimistic Updates
+
+问题：之前的实现先请求服务器，再更新UI视图
+
+改成：先更新视图，要是请求服务器失败再进行回滚
+
+![image-20220320111740017](README.assets/image-20220320111740017.png)
+
+### 10 - Expected vs Unexpected Errors
+
+- 客户端错误-可预期错误（apiEndpoint可预测并返回给用户的）
+  - 404-not found（如要删除一个不合法id的帖子）
+  - 400-bad request（提交不合法的表单，服务器验证失败）
+    - 如何处理：显示一些特殊信息给用户
+- 不可预期错误（正常情况下不会出现）
+  - 网断了、数据库、服务器宕机、bug
+    - 如何处理：记录日志 & 显示通用友好错误信息
+
+- 如何判断一个异常的类型？
+  - Exception对象有两个属性：request & response
+  - 当发生不可预期错误时reponse为null
+
+![image-20220320113111416](README.assets/image-20220320113111416.png)
+
+### 11 - Handling Unexpected Errors Globally - Axios Interceptors
+
+- 什么时候需要try-catch: 针对特定错误做具体的事情
+
+如：
+
+![image-20220320163517665](README.assets/image-20220320163517665.png)
+
+使用axios拦截器全局处理非预期错误（通用处理）：
+
+![image-20220320163611194](README.assets/image-20220320163611194.png)
+
+### 12 - Extracting a Reusable Http Service
+
+service/httpService.js:
+
+![image-20220320164157462](README.assets/image-20220320164157462.png)
+
+App.js中导入http类，并可以隐藏axios
+
+### 13 - Extracting a Config Module
+
+![image-20220320170720219](README.assets/image-20220320170720219.png)
+
+![image-20220320170736420](README.assets/image-20220320170736420.png)
+
+### 14 - Displaying Toast Notifications
+
+```powershell
+npm i react-toastify@4.1
+```
+
+![image-20220320171139248](README.assets/image-20220320171139248.png)
+
+![image-20220320171338349](README.assets/image-20220320171338349.png)
+
+httpService.js:
+
+![image-20220320171509831](README.assets/image-20220320171509831.png)
+
+效果：
+
+![image-20220320171649469](README.assets/image-20220320171649469.png)
+
+### 15 - Logging Errors
+
+- 日志服务：[Application Monitoring and Error Tracking Software | Sentry](https://sentry.io/welcome/)
+
+![image-20220320172806307](README.assets/image-20220320172806307.png)
+
+```powershell
+npm i raven-js@3.26.4
+```
+
+### 16 - Extracting a Logger Service
+
+service/logService.js
+
+### 17 - Vidly Backend
+
+### 19 - Installing MongoDB
+
+1. 下载（勾选compass）
+
+2. 配置环境变量
+
+3. 启动mongoDB守护程序
+
+   创建目录
+
+   ```powershell
+   mongod --dbpath E:\data\db
+   ```
+
+   ![image-20220320200018036](README.assets/image-20220320200018036.png)
+
+127.0.0.1:27017
+
+### 20 - Setting Up the Node Backend
+
+- 参考[该仓库](https://github.com/mosh-hamedani/vidly-api-node)进行Node后端配置
+
+![image-20220321103246218](README.assets/image-20220321103246218.png)
+
+![image-20220321103230456](README.assets/image-20220321103230456.png)
+
+### 21 - Disabling Authentication
+
+![image-20220320211554463](README.assets/image-20220320211554463.png)
+
+可以POST请求了
+
+### 22 - Connect Movies Page to the Backend
+
+### 23 - Adding Http and Log Services
+
+```powershell
+npm i axios@0.18.0 react-toastify@4.1.0
+```
+
+logService.js、httpService.js移入services
+
+![image-20220321103938014](README.assets/image-20220321103938014.png)
+
+### 24 - Replacing FakeGenreService
+
+genreService要和fakeGenreService接口保持一致，改变实现过程（从服务器get数据）
+
+![image-20220321105113138](README.assets/image-20220321105113138.png)
+
+返回的是promise对象，修改为：
+
+![image-20220321105304375](README.assets/image-20220321105304375.png)
+
+### 25 - Replacing FakeMovieService
+
+![image-20220321110846054](README.assets/image-20220321110846054.png)
+
+![image-20220321110915383](README.assets/image-20220321110915383.png)
+
+### 26 - Extracting a Config File
+
+config.json
+
+![image-20220321112422084](README.assets/image-20220321112422084.png)
+
+![image-20220321112441903](README.assets/image-20220321112441903.png)
+
+### 27 - Exercise- Connect Movie Form to the Backend
+
+### 28 - Populating the Form
+
+![image-20220321115213843](README.assets/image-20220321115213843.png)
+
+### 29 - Refactoring
+
+![image-20220321115542714](README.assets/image-20220321115542714.png)
+
+### 30 - Saving the Movie
+
+![image-20220321130134340](README.assets/image-20220321130134340.png)
+
+![image-20220321130148934](README.assets/image-20220321130148934.png)
+
+### 31 - Refactoring
+
+movieService.js消除重复
+
+![image-20220321130734036](README.assets/image-20220321130734036.png)
