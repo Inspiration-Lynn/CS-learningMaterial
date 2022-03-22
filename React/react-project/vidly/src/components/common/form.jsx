@@ -12,7 +12,7 @@ class Form extends Component {
       abortEarly: false,
     };
     const { error } = Joi.validate(this.state.data, this.schema, options);
-    console.log("Joi.validate error: ", error);
+    // console.log("Joi.validate error: ", error);
     if (!error) return null;
 
     // get the array and map into our errors object
@@ -85,7 +85,7 @@ class Form extends Component {
     return (
       <Select
         name={name}
-        value={data[name]}  
+        value={data[name]}
         label={label}
         options={options}
         onChange={this.handleChange}

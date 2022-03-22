@@ -3210,3 +3210,197 @@ config.json
 movieService.js消除重复
 
 ![image-20220321130734036](README.assets/image-20220321130734036.png)
+
+## 9- Authentication and Authorization (01:41)
+
+### 1 - Introduction
+
+![image-20220321152253753](README.assets/image-20220321152253753.png)
+
+### 2 - Registering a New User
+
+### 3 - Submitting the Registration Form
+
+![image-20220321153721543](README.assets/image-20220321153721543.png)
+
+![image-20220321153817357](README.assets/image-20220321153817357.png)
+
+![image-20220321153654099](README.assets/image-20220321153654099.png)
+
+![image-20220321153635786](README.assets/image-20220321153635786.png)
+
+### 4 - Handling Registration Errors
+
+![image-20220321154342440](README.assets/image-20220321154342440.png)
+
+![image-20220321154323297](README.assets/image-20220321154323297.png)
+
+### 5 - Logging in a User
+
+### 6 - Submitting the Login Form
+
+![image-20220321155553201](README.assets/image-20220321155553201.png)
+
+![image-20220321155604585](README.assets/image-20220321155604585.png)
+
+返回JSON网络令牌
+
+![image-20220321155531543](README.assets/image-20220321155531543.png)
+
+### 7 - Handling Login Errors
+
+![image-20220321155841338](README.assets/image-20220321155841338.png)
+
+![image-20220321155829551](README.assets/image-20220321155829551.png)
+
+### 8 - Storing the JWT (保存JSON网络令牌)
+
+1. 将用户的JSON网络令牌存储在浏览器的localStorage对象中
+2. 登录成功，重定向到homepage
+
+![image-20220321160927488](README.assets/image-20220321160927488.png)
+
+![image-20220321160754834](README.assets/image-20220321160754834.png)
+
+### 9 - Logging in the User upon Registration
+
+为了使得客户可以读到自定义header(包含jwt)，在node后端添加这个standard header：
+
+![image-20220321162024061](README.assets/image-20220321162024061.png)
+
+重启服务器
+
+![image-20220321162236840](README.assets/image-20220321162236840.png)
+
+![image-20220321162544751](README.assets/image-20220321162544751.png)
+
+### 10 - JSON Web Token（JWT）
+
+- [working jwt](https://jwt.io/)
+  - Library: 各种框架下用来创建、验证JWT的库
+  - Debugger
+
+![image-20220321170005727](README.assets/image-20220321170005727.png)
+
+### 11 - Getting the Current User
+
+```
+npm i jwt-decode@2.2.0
+```
+
+![image-20220321192045479](README.assets/image-20220321192045479.png)
+
+### 12 - Showing the Current User on NavBar
+
+![image-20220321193227729](README.assets/image-20220321193227729.png)
+
+![image-20220321193246778](README.assets/image-20220321193246778.png)
+
+### 13 - Logging out the User
+
+- local Storage中是否有token
+
+![image-20220321193840475](README.assets/image-20220321193840475.png)
+
+在App.js增加路由
+
+### 14 - Refactoring
+
+![image-20220321205532794](README.assets/image-20220321205532794.png)
+
+### 15 - Calling Protected API Endpoints
+
+修改Node后端，用户必须登录才能增删改电影
+
+![image-20220321205829582](README.assets/image-20220321205829582.png)
+
+重启node服务器
+
+![image-20220321210030099](README.assets/image-20220321210030099.png)
+
+apiEndpoint需要jwt
+
+![image-20220322102657520](README.assets/image-20220322102657520.png)
+
+![image-20220322102719217](README.assets/image-20220322102719217.png)
+
+### 16 - Fixing BI-directional Dependencies
+
+- 15中的严重问题：**双向依赖**（authService & httpService）
+
+解决：
+
+1. 确定哪个模块更加核心（httpService）
+2. 删除核心模块中的依赖，反转实现（http调用getJwt() -> Auth调用setJwt()）
+
+![image-20220322103735227](README.assets/image-20220322103735227.png)
+
+![image-20220322103909381](README.assets/image-20220322103909381.png)
+
+### 17 - Authorization
+
+Delete - 需要属性`isAdmin: true`
+
+Delete需要两个中间件：auth admin
+
+![image-20220322105705787](README.assets/image-20220322105705787.png)
+
+![image-20220322104620654](README.assets/image-20220322104620654.png)
+
+### 18 - Showing or Hiding Elements based on the User
+
+目标：用户未登录时隐藏“new button”
+
+向Route里面的movies组件传递props
+
+![image-20220322110431275](README.assets/image-20220322110431275.png)
+
+![image-20220322110642107](README.assets/image-20220322110642107.png)
+
+### 19 - Protecting Routes
+
+保护路由：/movies/new
+
+![image-20220322111951369](README.assets/image-20220322111951369.png)
+
+### 20 - Extracting ProtectedRoutes Component
+
+- 难
+
+构建一个组件，审查当前用户，如果未登录自动重定向
+
+*替换19中的方法*
+
+- Route组件中要么设置组件(component=)，要不设置render函数
+
+![image-20220322113653692](README.assets/image-20220322113653692.png)
+
+![image-20220322113720248](README.assets/image-20220322113720248.png)
+
+### 21 - Redirecting after Login
+
+- 难
+
+props.location.path是用户本来想去的地方
+
+![image-20220322114359179](README.assets/image-20220322114359179.png)
+
+![image-20220322115114661](README.assets/image-20220322115114661.png)
+
+state是传递给重定向组件(LoginForm)的，详细见文档
+
+![image-20220322115352683](README.assets/image-20220322115352683.png)
+
+登录后不能再看到login路由：
+
+![image-20220322115607869](README.assets/image-20220322115607869.png)
+
+### 22 - Exercise
+
+*目标：只有当用户登录且为管理员时才显示删除按钮*
+
+### 23 - Hiding the Delete Column
+
+- 难
+
+![image-20220322131348263](README.assets/image-20220322131348263.png)
