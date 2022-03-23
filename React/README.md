@@ -3404,3 +3404,263 @@ state是传递给重定向组件(LoginForm)的，详细见文档
 - 难
 
 ![image-20220322131348263](README.assets/image-20220322131348263.png)
+
+## 10- Deployment
+
+### 1 - Introduction
+
+- Environment Variables
+- Production Builds
+- Deploying to Heroku
+
+### 2 - Environment Variables
+
+文件：`.env` `.env.development`
+
+变量名以REACT_APP开头，如：REACT_APP_NAME
+
+### 3 - Production Builds
+
+```
+npm run build
+```
+
+optimized production build
+
+生成build文件夹
+
+### 4 - Getting Started with Heroku
+
+1. 创建[Heroku](https://www.heroku.com/)账号
+2. 下载Heroku CLI
+
+登录
+
+![image-20220322174804462](README.assets/image-20220322174804462.png)
+
+### 5 - MongoDB in the Cloud
+
+- mLab - 在云中发布mongoDB
+
+注册一个mLab账号
+
+[Security Quickstart | MongoDB](https://cloud.mongodb.com/v2/62399c38d459dd2802bc4288#setup/access?includeToast=true)
+
+### 6 - Adding Code to a Git Repository
+
+先发布后端vidly-node-api
+
+### 7 - Deploying to Heroku
+
+在vidly-api-node文件夹创建一个heroku文件夹
+
+```powershell
+PS E:\project\vidly\vidly-api-node> heroku create
+ »   Warning: heroku update available from 7.53.0 to 7.59.4.
+Creating app... done, ⬢ ancient-sierra-80441
+https://ancient-sierra-80441.herokuapp.com/ | https://git.heroku.com/ancient-sierra-80441.git
+```
+
+- https://ancient-sierra-80441.herokuapp.com/ - 后端在heroku的address，前端向这个地址/api/...请求数据
+- https://git.heroku.com/ancient-sierra-80441.git - vidly-node-api的远程仓库
+
+- **continuous integration**
+
+```powershell
+PS E:\project\vidly\vidly-api-node> git push heroku master
+```
+
+成功将vidly后端发布到heroku
+
+打开：
+
+```
+heroku open
+```
+
+![image-20220322194936227](README.assets/image-20220322194936227.png)
+
+### 8 - Viewing Logs
+
+在[Personal apps | Heroku](https://dashboard.heroku.com/apps)查看应用
+
+![image-20220322195007166](README.assets/image-20220322195007166.png)
+
+在terminal查看logs
+
+```
+heroku logs
+```
+
+错误原因：
+
+![image-20220322195334347](README.assets/image-20220322195334347.png)
+
+修改db为mLab上的云mongodb：
+
+![image-20220322195454474](README.assets/image-20220322195454474.png)
+
+- 不要在配置文件中保存密码
+- production环境下，使用环境变量（控制台配置，不是代码的一部分）
+- 开发者部署应用时，需要将本地的环境变量保存到服务器上
+
+### 9 - Setting Environment Variables on Heroku
+
+
+
+## # Advanced Topics (01:04)
+
+- Higher Order Components
+- Hooks
+- Context
+
+```powershell
+npx create-react-app react-advanced
+```
+
+vs code插件：reactjs code snippets
+
+chrome插件：React Dev Tools
+
+### ## Higher Order Components
+
+- To reuse logic across components
+
+*快捷键：rcc + tab*
+
+高阶组件命名：前缀with；withTooltip
+
+函数withTooltip()以现有组件作为参数，返回一个组件（包裹传进来的组件进行加强）
+
+![image-20220323105438797](README.assets/image-20220323105438797.png)
+
+### ## Hooks
+
+React版本后，**Functional组件和Class组件均为stateful**
+
+- WHY HOOKS:
+  - Classes are a bit difficult
+  - The this keyword
+  - Boilerplate code
+
+有了hooks，可以用Functional组件创建Class组件有的所有特性，并且更加简洁
+
+对比实现：
+
+1. Class组件
+
+![image-20220323110035988](README.assets/image-20220323110035988.png)
+
+2. Functional组件
+
+![image-20220323110102920](README.assets/image-20220323110102920.png)
+
+#### The useState Hook
+
+如何创建stateful的Functional组件
+
+*快捷键：rsf + tab*
+
+hook函数命名：前缀use
+
+```jsx
+const array = useState(0);
+const count = array[0]; // this.state.count
+const setCount = array[1];  // this.setState()
+```
+
+![image-20220323174721352](README.assets/image-20220323174721352.png)
+
+使用多个hook
+
+![image-20220323175147632](README.assets/image-20220323175147632.png)
+
+- 注意：hook不能在循环、条件语句、嵌套中使用
+
+#### The useEffect Hook
+
+![image-20220323175643160](README.assets/image-20220323175643160.png)
+
+- Functional组件中的useEffect()做了Class组件中生命周期函数的所有工作
+
+1. componentDidMount() & componentDidUpdate() 逻辑写在一处：useEffect()
+
+![image-20220323180216396](README.assets/image-20220323180216396.png)
+
+2. 依赖数组
+
+![image-20220323175938299](README.assets/image-20220323175938299.png)
+
+3. componentWillUnmount() 清理代码
+
+![image-20220323180258695](README.assets/image-20220323180258695.png)
+
+#### Custom Hooks
+
+![image-20220323180947555](README.assets/image-20220323180947555.png)
+
+#### Fetching Data with Hooks
+
+```powershell
+npm i axios
+```
+
+![image-20220323182251688](README.assets/image-20220323182251688.png)
+
+### ## Context
+
+- 问题：**Prop Drilling**
+
+![image-20220323182509630](README.assets/image-20220323182509630.png)
+
+- 曾经用Redux库解决
+
+![image-20220323182607620](README.assets/image-20220323182607620.png)
+
+- 新版React - context解决这个问题
+
+#### Context in Class Components
+
+结构：App保存了currentUser，想要在MovieList中访问
+
+![image-20220323183108591](README.assets/image-20220323183108591.png)
+
+1. 创建上下文对象
+
+![image-20220323183541852](README.assets/image-20220323183541852.png)
+
+2. Provide it in the top component
+
+![image-20220323184011454](README.assets/image-20220323184011454.png)
+
+3. Consume the context somewhere in our component tree
+
+- Consumer component expects a function as a child
+
+![image-20220323192206004](README.assets/image-20220323192206004.png)
+
+- consume this context outside the render method:
+
+![image-20220323192827071](README.assets/image-20220323192827071.png)
+
+#### Context in Functional Components
+
+*比类组件简单多了*
+
+- 只需要hook - setContext()
+
+![image-20220323194032560](README.assets/image-20220323194032560.png)
+
+#### Updating the Context
+
+*难*
+
+![image-20220323200403059](README.assets/image-20220323200403059.png)
+
+#### Consuming Multiple Contexts
+
+![image-20220323201943218](README.assets/image-20220323201943218.png)
+
+![image-20220323202151611](README.assets/image-20220323202151611.png)
+
+![image-20220323202142794](README.assets/image-20220323202142794.png)
