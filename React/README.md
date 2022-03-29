@@ -3506,7 +3506,9 @@ heroku logs
 
 ### 9 - Setting Environment Variables on Heroku
 
+### 10 - Preparing the Front-end for Deployment
 
+### 11 - Deploying the Front-end
 
 ## # Advanced Topics (01:04)
 
