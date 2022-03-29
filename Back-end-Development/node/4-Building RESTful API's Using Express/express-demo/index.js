@@ -2,7 +2,7 @@ const Joi = require("joi"); // 类名首字母大写
 const express = require("express");
 const app = express();
 
-app.use(express.json());
+app.use(express.json()); // req.body
 
 const courses = [
   { id: 1, name: "course1" },
