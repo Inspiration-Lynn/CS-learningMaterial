@@ -328,19 +328,113 @@ function Circle(radius) {
 
 ### 14 - Exercise- Stopwatch
 
-
-
-### 15- Solution- Stopwatch
-
-
-
-
+### 15 - Solution- Stopwatch
 
 ## Prototypes
 
+### 1 - Inheritance
 
+类中的继承：
+
+![image-20220511131951583](README.assets/image-20220511131951583.png)
+
+Classical vs Prototypical Inheritance（面试常问问题）
+
+本章讨论：Prototypical Inheritance
+
+### 2 - Prototypical Inheritance
+
+Prototype: parent
+
+![image-20220511132305636](README.assets/image-20220511132305636.png)
+
+![image-20220511132459130](README.assets/image-20220511132459130.png)
+
+在JS中创建的对象直接或间接的继承自元对象；元对象是所有对象的根对象，其没有原型。
+
+在内存中只有一个元对象的实例
+
+![image-20220511132842897](README.assets/image-20220511132842897.png)
+
+获得对象原型的方法：
+
+```javascript
+Object.getPrototypeOf(myObj);
+```
+
+![image-20220511132829767](README.assets/image-20220511132829767.png)
+
+A prototype is just a regular object!
+
+### 3 - Multi-level Inheritance
+
+创建一个名为myArray的数组：
+
+![image-20220511133252695](README.assets/image-20220511133252695.png)
+
+circle对象：
+
+**Objects created by a given constructor will have the same prototype.**
+
+![image-20220511133504429](README.assets/image-20220511133504429.png)![image-20220511133513035](README.assets/image-20220511133513035.png)
+
+### 4 - Property Attributes
+
+遍历对象时为什么不会遍历元对象的属性和方法？
+
+JS中的属性有特征；某些特征阻止一个属性被遍历
+
+![image-20220511134005088](README.assets/image-20220511134005088.png)
+
+![image-20220511134023709](README.assets/image-20220511134023709.png)
+
+为属性设置特征：
+
+如之前的getter和setter
+
+![image-20220511134343130](README.assets/image-20220511134343130.png)
+
+### 5 - Constructor Prototypes
+
+Constructor.prototype()等同于parent of myObj
+
+![image-20220511135034629](README.assets/image-20220511135034629.png)
+
+### 6 - Prototype vs Instance Members
+
+避免内存中大量circle对象的副本，每个副本都有一个draw方法，浪费很多空间：放到circleBase中（circle的原型）
+
+内存中只有一个circleBase实例，即只需要有一个draw方法的实例
+
+实例成员 & 原型成员
+
+![image-20220511140012835](README.assets/image-20220511140012835.png)
+
+![image-20220511135951456](README.assets/image-20220511135951456.png)
+
+重写 & 就近原则
+
+实例方法中可以引用原型的成员；原型方法中可以引用实例的成员
+
+![image-20220511140501253](README.assets/image-20220511140501253.png)
+
+![image-20220511140540261](README.assets/image-20220511140540261.png)
+
+### 7 - Iterating Properties
+
+![image-20220512212858192](README.assets/image-20220512212858192.png)
+
+![image-20220512212910436](README.assets/image-20220512212910436.png)
+
+### 8 - Avoid Extending Build-in Objects
+
+Don't modify objects you don't own!
 
 ## Prototypical Inheritance
+
+### 1 - Creating Your Own Prototypical Inheritance
+
+
 
 
 
