@@ -434,6 +434,22 @@ Don't modify objects you don't own!
 
 ### 1 - Creating Your Own Prototypical Inheritance
 
+![image-20220531185643575](README.assets/image-20220531185643575.png)
+
+create()：以给定原型创建对象
+
+![image-20220531190004081](README.assets/image-20220531190004081.png)
+
+### 2 - Resetting the Constructor
+
+当重置了一个对象的prototype时，也需要重置constructor
+
+![image-20220531190958485](README.assets/image-20220531190958485.png)
+
+### 3 - Calling the Super Constructor
+
+
+
 
 
 
